@@ -20,12 +20,9 @@ function createCircle(event) {
     console.log(circle);
 
     const circleDiv = document.createElement("div");
-    circleDiv.style.position = "absolute";
+    circleDiv.classList.add("cirlceCss");
     circleDiv.style.left = circle.x - 6 + "px";
     circleDiv.style.top = circle.y - 6 + "px";
-    circleDiv.style.width = "12px";
-    circleDiv.style.height = "12px";
-    circleDiv.style.borderRadius = "50%";
     circleDiv.style.backgroundColor = circle.bg;
     wrapper.appendChild(circleDiv);
 
@@ -34,42 +31,49 @@ function createCircle(event) {
     deleteCircles.length = 0;
 }
 
-// undoBtn.addEventListener("click", undoCircle);
+wrapper.addEventListener("click", function (e) {
+    e.stopPropagation();
+});
+
 undoBtn.addEventListener("click", function (e) {
     e.stopPropagation();
-    undoCircle();
+    // undoCircle();
+    handleAction("undo");
 });
 
-function undoCircle() {
-    if (circles.length === 0) return;
-    const lastCircle = circles.pop();
-    wrapper.removeChild(lastCircle.element);
-    deleteCircles.push(lastCircle);
-}
-
-// redoBtn.addEventListener("click", redoCircle);
 redoBtn.addEventListener("click", function (e) {
     e.stopPropagation();
-    redoCircle();
+    // redoCircle();
+    handleAction("redo");
 });
 
-function redoCircle() {
-    if (deleteCircles.length === 0) return;
-
-    const lastDeleted = deleteCircles.pop();
-
-    wrapper.appendChild(lastDeleted.element);
-    circles.push(lastDeleted);
-}
-
-// resetBtn.addEventListener("click", resetCircle);
 resetBtn.addEventListener("click", function (e) {
     e.stopPropagation();
-    resetCircle();
+    // resetCircle();
+    handleAction("reset");
 });
 
-function resetCircle() {
-    circles.forEach(circle => wrapper.removeChild(circle.element));
-    circles.length = 0;
-    deleteCircles.length = 0;
+function handleAction(action) {
+
+    if (action === "undo") {
+
+        if (circles.length === 0) return;
+        const lastCircle = circles.pop();
+        wrapper.removeChild(lastCircle.element);
+        deleteCircles.push(lastCircle);
+    }
+    else if (action === "redo") {
+
+        if (deleteCircles.length === 0) return;
+
+        const lastDeleted = deleteCircles.pop();
+
+        wrapper.appendChild(lastDeleted.element);
+        circles.push(lastDeleted);
+    }
+    else if (action === "reset") {
+        circles.forEach(circle => wrapper.removeChild(circle.element));
+        circles.length = 0;
+        deleteCircles.length = 0;
+    }
 }
